@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tryout CAT BKN TKP</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    #container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #007bff;
+      color: white;
+      padding: 10px 20px;
+    }
+
+    .soal {
+      display: none;
+    }
+
+    .soal.active {
+      display: block;
+    }
+
+    button {
+      margin: 10px 5px;
+      padding: 10px 20px;
+    }
+
+    .opsi label {
+      display: block;
+      margin: 5px 0;
+    }
+
+    .timer {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+    <div class="header">
+      <div>LATIHAN TKP 1</div>
+      <div class="timer" id="timer">00:00:00</div>
+    </div>
+
+    <div id="quiz"></div>
+
+    <div>
+      <button onclick="prevSoal()">Kembali</button>
+      <button onclick="nextSoal()">Lanjut</button>
+      <button onclick="finishQuiz()">Selesai</button>
+    </div>
+
+    <div id="result" style="display:none;">
+      <h2>Hasil Akhir</h2>
+      <p>Skor Anda: <span id="score"></span></p>
+      <h3>Review Jawaban</h3>
+      <div id="review"></div>
+    </div>
+  </div>
+
+  <script>
+    const soalTKP = [{
+        soal: "1. Anda adalah Kepala Dinas Pendidikan Kota yang baru dilantik. Dalam rapat evaluasi, Anda menemukan bahwa selama lima tahun terakhir terjadi penurunan motivasi guru dalam menerapkan inovasi pembelajaran. Sebagian besar guru merasa program pelatihan hanya menambah beban administratif tanpa dampak langsung terhadap pengajaran. Padahal, Anda dituntut Wali Kota untuk segera meningkatkan indeks mutu pendidikan kota dalam satu tahun. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menugaskan tim pengawas sekolah untuk mendata semua inovasi guru yang telah ada, menilai efektifitasnya, dan melaporkan kepada Anda untuk diintegrasikan ke kebijakan berikutnya.",
+            skor: 2
+          },
+          {
+            text: "Membuat surat edaran motivasi kepada seluruh guru tentang pentingnya inovasi, serta menekankan target yang harus dicapai bersama untuk mengangkat mutu pendidikan kota.",
+            skor: 1
+          },
+          {
+            text: "Mengundang perwakilan guru dari setiap sekolah untuk berdiskusi, mendengarkan kendala mereka, dan menyusun rekomendasi bersama untuk disampaikan kepada seluruh jajaran.",
+            skor: 5
+          },
+          {
+            text: "Menginstruksikan seluruh kepala sekolah untuk mengadakan rapat internal dengan guru dan melaporkan hasilnya kepada Anda untuk dianalisis sebelum mengambil kebijakan lanjutan.",
+            skor: 3
+          },
+          {
+            text: "Mengadakan forum kolaborasi antar guru secara daring dan luring untuk berbagi praktik baik serta mendokumentasikan inovasi yang dapat diterapkan di sekolah lain.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "2. Anda adalah Sekretaris Daerah Kabupaten. Dalam enam bulan terakhir, laporan menunjukkan penurunan kinerja ASN di beberapa OPD, terutama terkait kecepatan pelayanan publik dan ketepatan administrasi. Analisis awal menunjukkan hal ini dipengaruhi oleh perubahan sistem digital yang belum sepenuhnya dipahami ASN, ditambah beban kerja yang semakin banyak. apa yang akan anda lakukan?",
+        opsi: [{
+            text: "Memberikan penghargaan khusus setiap bulan kepada OPD dengan kinerja pelayanan publik tercepat dan tersigap dalam melayani masyarakat.",
+            skor: 2
+          },
+          {
+            text: "Membentuk tim evaluasi percepatan kinerja untuk memantau dan melaporkan perkembangan kinerja setiap OPD kepada Anda setiap minggu",
+            skor: 3
+          },
+          {
+            text: "Menginstruksikan biro organisasi dan BKPSDM untuk segera menyusun modul pelatihan praktis sistem digital sesuai kebutuhan kerja harian ASN.",
+            skor: 5
+          },
+          {
+            text: " Menerbitkan surat keputusan pemberian insentif tambahan bagi ASN yang mampu menyelesaikan pekerjaan tepat waktu dan tanpa kesalahan administrasi.",
+            skor: 1
+          },
+          {
+            text: "Menugaskan setiap kepala OPD untuk menetapkan target kinerja mingguan yang terukur bagi ASN dan melaporkannya kepada Anda setiap akhir pekan.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "3.Anda adalah Direktur Utama sebuah perusahaan BUMN. Dua divisi utama, yaitu Divisi Pemasaran dan Divisi Produksi, sedang mengalami konflik terkait target produksi dan jadwal pemasaran yang tidak sinkron. Konflik ini sudah berlarut hingga mempengaruhi performa perusahaan dan muncul keluhan dari pelanggan karena keterlambatan distribusi barang. Apa yang akan anda lakukan",
+        opsi: [{
+            text: "Memberikan insentif khusus kepada divisi yang mampu menyesuaikan diri dan memenuhi target perusahaan sesuai jadwal distribusi.",
+            skor: 1
+          },
+          {
+            text: "Membentuk tim percepatan proses produksi yang bertanggung jawab langsung kepada Anda untuk memastikan target pemasaran terpenuhi.",
+            skor: 2
+          },
+          {
+            text: "Menetapkan sistem integrasi digital terpadu yang menghubungkan data produksi dan pemasaran secara real-time untuk meminimalisir kesalahpahaman target.",
+            skor: 5
+          },
+          {
+            text: "Menerbitkan kebijakan penyesuaian target produksi sesuai analisis forecast pemasaran bulanan yang ditetapkan perusahaan.",
+            skor: 3
+          },
+          {
+            text: "Menunjuk seorang project manager lintas divisi yang memiliki kewenangan penuh untuk mengatur jadwal produksi dan pemasaran agar berjalan efektif.",
+            skor: 4
+          }
+        ]
+      },
+      // ================================
+      // Lanjutkan pola di atas hingga soal ke-45
+      // Misal:
+      {
+        soal: "4. Anda adalah Kapolres di sebuah kota besar. Hari ini, beredar video viral di media sosial yang menunjukkan seorang anggota polisi lalu lintas di wilayah Anda bersikap arogan saat menilang pengendara. Video tersebut menuai hujatan publik dan menurunkan kepercayaan masyarakat terhadap institusi Polri.  apa yang akan anda lakukan ? ",
+        opsi: [{
+            text: "Mengeluarkan pernyataan resmi permintaan maaf kepada masyarakat melalui media massa dan media sosial atas perilaku anggota Anda.",
+            skor: 4
+          },
+          {
+            text: "Menonaktifkan sementara anggota tersebut dari tugas pelayanan publik dan menugaskannya di bagian administrasi selama proses pemeriksaan internal.",
+            skor: 2
+          },
+          {
+            text: "Menginstruksikan Kasi Propam untuk segera melakukan pemeriksaan dan menyelesaikan proses disiplin anggota tersebut secepatnya.",
+            skor: 3
+          },
+          {
+            text: "Memberikan sanksi tegas kepada anggota tersebut sesuai ketentuan disiplin Polri dan mengumumkannya secara resmi kepada masyarakat",
+            skor: 5
+          },
+          {
+            text: "Mengeluarkan surat edaran kepada seluruh anggota Polres untuk meningkatkan profesionalisme dan menghindari tindakan arogansi dalam bertugas.",
+            skor: 1
+          }
+        ]
+      },
+      {
+        soal: "5. Anda adalah Kepala BKN Pusat. Tahun ini, pemerintah hanya menyetujui formasi CPNS dan PPPK yang jauh lebih sedikit dibanding tahun lalu karena keterbatasan anggaran negara. Di sisi lain, banyak lulusan perguruan tinggi dan pegawai honorer yang menunggu kesempatan menjadi ASN. Media dan masyarakat menilai BKN tidak pro terhadap pengurangan pengangguran dan kesejahteraan honorer. apa yang akan anda lakukan?",
+        opsi: [{
+            text: "Menyusun dan mempublikasikan rencana rekrutmen ASN jangka panjang lima tahun ke depan agar masyarakat memiliki gambaran dan motivasi persiapan.",
+            skor: 4
+          },
+          {
+            text: "Mengajukan usulan formasi tambahan kepada Kemenpan RB dan Kemenkeu dengan analisis kebutuhan riil ASN nasional yang paling prioritas.",
+            skor: 5
+          },
+          {
+            text: "Menerbitkan surat edaran kepada seluruh instansi untuk mengoptimalkan redistribusi pegawai antar daerah sesuai kebutuhan formasi prioritas nasional.",
+            skor: 1
+          },
+          {
+            text: "Menginstruksikan percepatan seleksi CPNS dan PPPK agar kebutuhan ASN yang sudah disetujui formasinya dapat segera terisi dan mengurangi beban kerja instansi.",
+            skor: 2
+          },
+          {
+            text: "Membuat publikasi resmi melalui website dan media sosial BKN tentang alasan rasional kebijakan kuota terbatas serta menyampaikan data kebutuhan ASN nasional secara transparan.",
+            skor: 3
+          }
+        ]
+      },
+      {
+        soal: "6. Anda adalah Kepala Sekolah SMA Negeri unggulan di kota Anda. Dalam satu bulan terakhir, Anda menerima laporan bahwa beberapa guru sering datang terlambat dan pulang sebelum jam pelajaran berakhir. Hal ini mulai dikeluhkan siswa dan orang tua karena materi pelajaran tidak tersampaikan dengan baik, sementara sekolah Anda sedang dalam penilaian akreditasi ulang. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Membuat jadwal piket khusus bagi Wakasek untuk mengecek kedisiplinan guru dan melaporkan langsung kepada Anda setiap hari.",
+            skor: 2
+          },
+          {
+            text: "Mengeluarkan kebijakan pemberian tunjangan kinerja hanya bagi guru yang memiliki rekam absensi baik setiap bulan.",
+            skor: 4
+          },
+          {
+            text: "Menugaskan guru yang sering terlambat untuk membantu kegiatan administrasi sekolah setelah jam mengajar sebagai bentuk tanggung jawab tambahan.",
+            skor: 1
+          },
+          {
+            text: "Menetapkan aturan tertulis penegakan disiplin waktu beserta konsekuensi yang jelas dan mengumumkannya kepada seluruh guru.",
+            skor: 5
+          },
+          {
+            text: "Mengajukan nama-nama guru disiplin untuk mengikuti pelatihan pengembangan kompetensi ke luar daerah sebagai bentuk penghargaan dan motivasi bagi lainnya.",
+            skor: 3
+          }
+        ]
+      },
+      {
+        soal: "7. Anda adalah Kepala Puskesmas di wilayah pedesaan. Hari ini, tim vaksinasi melaporkan bahwa sebagian besar warga menolak vaksinasi dengan alasan takut efek samping dan adanya berita hoaks yang beredar. Program vaksinasi ini merupakan target capaian nasional yang harus Anda penuhi bulan ini. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan seluruh bidan desa untuk memberikan edukasi langsung saat kunjungan posyandu dan imunisasi balita terkait manfaat vaksin bagi keluarga.",
+            skor: 5
+          },
+          {
+            text: "Menugaskan tim promosi kesehatan membuat video edukasi tentang keamanan vaksinasi untuk diputar di balai desa dan grup WhatsApp warga",
+            skor: 4
+          },
+          {
+            text: "Mengadakan doorprize bagi warga yang mengikuti vaksinasi massal sebagai bentuk apresiasi dan daya tarik program.",
+            skor: 1
+          },
+          {
+            text: "Membuat surat permohonan kepada Dinas Kesehatan Kabupaten untuk mendatangkan tenaga medis ahli imunisasi agar warga lebih percaya",
+            skor: 2
+          },
+          {
+            text: "Menetapkan jadwal vaksinasi malam hari khusus bagi pekerja harian yang tidak bisa hadir di siang hari agar capaian target meningkat.",
+            skor: 3
+          }
+        ]
+      },
+      {
+        soal: "8. Anda adalah Kapolres di sebuah kota provinsi. Hari ini, ribuan mahasiswa turun ke jalan menuntut pencabutan kebijakan kenaikan UKT yang dinilai memberatkan. Aksi demo meluas hingga menutup jalan protokol utama dan mulai mengganggu aktivitas masyarakat. Ada potensi bentrokan karena sebagian massa mulai mendorong barikade polisi. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan Kasat Lantas untuk segera melakukan rekayasa lalu lintas dan membuka jalur alternatif agar aktivitas masyarakat tetap berjalan lancar.",
+            skor: 4
+          },
+          {
+            text: "Menyiapkan tim negosiator khusus dari Satbinmas untuk mengarahkan massa agar tetap tertib dan tidak melakukan tindakan anarkis selama demo berlangsung.",
+            skor: 5
+          },
+          {
+            text: "Memerintahkan Dalmas untuk meningkatkan pengamanan barikade dan menyiagakan water cannon di lokasi untuk mengantisipasi situasi jika eskalasi meningkat.",
+            skor: 1
+          },
+          {
+            text: "Menerbitkan himbauan resmi melalui media sosial Polres kepada masyarakat untuk menghindari area demo dan menggunakan jalur alternatif.",
+            skor: 2
+          },
+          {
+            text: "Menginstruksikan Humas Polres untuk menyebarluaskan informasi situasi demo secara real time agar masyarakat dapat mengatur aktivitas dan tidak terjebak kemacetan.",
+            skor: 3
+          }
+        ]
+      },
+      {
+        soal: "9. Anda adalah Kepala Sekolah SMP Negeri favorit. Hari ini, wali kelas melaporkan bahwa seorang siswa mengalami bullying berat oleh beberapa teman sekelasnya hingga trauma dan tidak mau masuk sekolah. Orang tua korban mengancam akan memviralkan kasus ini jika tidak ada tindakan tegas dari sekolah. Sekolah Anda saat ini sedang dalam proses penilaian sekolah ramah anak tingkat nasional. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Memberikan penghargaan khusus kepada siswa yang berperan aktif melerai bullying di kelas untuk menumbuhkan budaya positif.",
+            skor: 1
+          },
+          {
+            text: "Menugaskan Wakasek Kesiswaan untuk menindaklanjuti kasus ini dengan membuat laporan resmi lengkap untuk disampaikan kepada Dinas Pendidikan.",
+            skor: 2
+          },
+          {
+            text: "Mengadakan program literasi anti bullying di setiap kelas dalam pekan ini agar seluruh siswa memahami bahaya bullying.",
+            skor: 3
+          },
+          {
+            text: "Memberikan sanksi tegas kepada pelaku bullying sesuai tata tertib sekolah dan mencatat pelanggarannya dalam buku induk kepribadian siswa.",
+            skor: 4
+          },
+          {
+            text: "Menginstruksikan guru BK untuk segera membuat program konseling intensif bagi korban agar pulih dan mau kembali ke sekolah.",
+            skor: 5
+          }
+        ]
+      },
+      {
+        soal: "10. Anda adalah Bupati sebuah kabupaten pesisir. Hari ini, terjadi banjir besar mendadak akibat hujan ekstrem dan tanggul jebol di beberapa desa. Ribuan warga mengungsi, jalan kabupaten lumpuh total, sekolah dan puskesmas terendam, serta logistik bantuan belum masuk karena akses terputus. Anda dituntut masyarakat untuk segera hadir dan menyelesaikan keadaan darurat ini. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan BPBD dan Dinas Sosial untuk mendirikan dapur umum di lokasi pengungsian dan memastikan kebutuhan makanan terpenuhi selama masa tanggap darurat.",
+            skor: 4
+          },
+          {
+            text: "Mengajukan permohonan bantuan darurat ke pemerintah provinsi dan BNPB pusat untuk mempercepat distribusi logistik dan peralatan evakuasi ke wilayah terdampak.",
+            skor: 3
+          },
+          {
+            text: "Menetapkan status tanggap darurat bencana banjir di kabupaten Anda agar seluruh OPD fokus menangani kondisi darurat sesuai tugas dan fungsinya.",
+            skor: 5
+          },
+          {
+            text: "Menugaskan Dinas PUPR dan BPBD untuk segera memperbaiki tanggul jebol dengan bantuan alat berat agar banjir tidak meluas ke desa lainnya.",
+            skor: 2
+          },
+          {
+            text: "Mengirim surat edaran kepada seluruh camat dan kepala desa agar mendata jumlah pengungsi dan kerusakan fasilitas umum untuk dilaporkan hari itu juga.",
+            skor: 1
+          }
+        ]
+      },
+      {
+        soal: "11. Anda adalah Direktur Utama BUMN bidang logistik nasional. Hari ini, serikat pekerja mengumumkan mogok kerja massal karena menolak kebijakan penyesuaian insentif lembur dan perubahan skema tunjangan kesehatan. Mayoritas karyawan berasal dari daerah sekitar pelabuhan dengan budaya kedaerahan yang sangat menghargai musyawarah mufakat dan pendekatan kekeluargaan dalam menyelesaikan konflik. Operasional pelabuhan dan gudang distribusi logistik terganggu total. Media mulai memberitakan mogok ini sebagai kegagalan manajemen dalam mengayomi karyawan. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Membuat pernyataan resmi di media massa bahwa perusahaan sedang mengevaluasi kebijakan dan menegaskan komitmen menjunjung tinggi nilai musyawarah mufakat bersama karyawan.",
+            skor: 3
+          },
+          {
+            text: " Mengeluarkan kebijakan pemberian bantuan sembako untuk seluruh karyawan terdampak kebijakan baru sebagai bentuk kepedulian perusahaan",
+            skor: 2
+          },
+          {
+            text: "Menugaskan Divisi Legal dan HRD meninjau ulang kebijakan penyesuaian insentif dan tunjangan kesehatan agar sesuai regulasi serta mempertimbangkan aspirasi karyawan lokal.",
+            skor: 5
+          },
+          {
+            text: "Mengajukan permohonan bantuan pengamanan kepada pihak kepolisian untuk menjaga aset perusahaan selama aksi mogok kerja massal berlangsung.",
+            skor: 1
+          },
+          {
+            text: "Menginstruksikan bagian HRD dan CSR perusahaan untuk menyusun program kesejahteraan karyawan berbasis budaya lokal dan nilai kekeluargaan agar karyawan merasa dihargai.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "12. Anda adalah Kepala Dinas Sosial Kabupaten. Data terbaru menunjukkan adanya lonjakan warga miskin ekstrem di beberapa desa terpencil, terutama lansia dan keluarga tanpa penghasilan tetap. Wilayah ini memiliki budaya lokal yang sangat menjunjung tinggi gotong royong dan solidaritas komunitas. Bupati meminta Anda segera menyiapkan langkah strategis untuk menurunkan angka kemiskinan ekstrem dalam tiga bulan ke depan. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menyiapkan program bantuan langsung tunai darurat dari dana Belanja Tidak Terduga (BTT) kabupaten bagi warga miskin ekstrem sambil menunggu bantuan pusat turun.",
+            skor: 2
+          },
+          {
+            text: "Membuat publikasi melalui media sosial dan radio lokal tentang kisah sukses warga yang berhasil keluar dari kemiskinan ekstrem untuk memotivasi lainnya",
+            skor: 1
+          },
+          {
+            text: "Menginstruksikan seluruh pendamping PKH dan TKSK untuk memvalidasi ulang data warga miskin ekstrem agar program bantuan tepat sasaran.",
+            skor: 4
+          },
+          {
+            text: "Mengajukan proposal program padat karya berbasis potensi lokal (misal kerajinan bambu dan anyaman pandan) kepada Kementerian Sosial RI.",
+            skor: 5
+          },
+          {
+            text: "Mengeluarkan surat edaran kepada seluruh kepala desa untuk mengaktifkan lumbung pangan desa dan gerakan gotong royong membantu warga miskin ekstrem.",
+            skor: 3
+          }
+        ]
+      },
+      {
+        soal: "13. Anda adalah Kepala Puskesmas di wilayah pedalaman kabupaten Anda. Data bulan ini menunjukkan kenaikan angka stunting balita di beberapa desa, terutama pada keluarga dengan tingkat ekonomi rendah dan pendidikan orang tua yang terbatas. Budaya masyarakat setempat sangat menjunjung tinggi nasehat tokoh adat dan kebiasaan pemberian makanan tradisional tertentu sejak bayi lahir. Bupati meminta Anda segera menurunkan angka stunting dalam dua bulan ke depan. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan bidan desa untuk mengadakan kelas ibu balita dan ibu hamil dengan materi gizi seimbang berbasis pangan lokal yang mudah dijangkau warga.",
+            skor: 4
+          },
+          {
+            text: "Mengajak tokoh adat dan kepala desa untuk membuat komitmen bersama dalam bentuk deklarasi desa bebas stunting.",
+            skor: 3
+          },
+          {
+            text: "Menugaskan tim gizi puskesmas untuk mendatangi rumah-rumah keluarga dengan balita stunting dan memberikan edukasi langsung tentang pengasuhan gizi.",
+            skor: 2
+          },
+          {
+            text: "Membuat program inovasi pemberian makanan tambahan bagi balita stunting dengan resep makanan tradisional bergizi yang disukai masyarakat setempat.",
+            skor: 5
+          },
+          {
+            text: "Mengajukan permohonan tambahan anggaran ke Dinas Kesehatan Kabupaten untuk membeli susu formula khusus balita stunting di desa Anda.",
+            skor: 1
+          }
+        ]
+      },
+      {
+        soal: "14. Anda adalah Kapolres di wilayah dengan kearifan lokal yang kuat dan masyarakat yang sangat menjunjung tinggi nama baik keluarga serta adat istiadat. Hari ini, Anda menerima laporan bahwa salah satu anggota Satres Narkoba tertangkap positif menggunakan narkoba saat tes urine berkala. Kasus ini sudah diketahui publik dan menimbulkan kecaman keras, serta menurunkan kepercayaan masyarakat kepada Polri. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan Kasi Propam untuk memproses disiplin dan pidana anggota tersebut secara transparan dan diumumkan kepada publik agar kepercayaan masyarakat pulih.",
+            skor: 5
+          },
+          {
+            text: "Menugaskan Kabag SDM untuk membuat program pembinaan rohani dan mental secara rutin bagi seluruh anggota dengan melibatkan tokoh agama dan adat setempat.",
+            skor: 3
+          },
+          {
+            text: "Mengundang tokoh adat dan tokoh masyarakat untuk menjelaskan langkah penanganan kasus ini sebagai bentuk penghormatan pada nilai budaya setempat.",
+            skor: 4
+          },
+          {
+            text: "Mengeluarkan surat edaran larangan keras penyalahgunaan narkoba beserta sanksi pemecatan kepada seluruh anggota dan menempelkannya di setiap satuan kerja Polres.",
+            skor: 1
+          },
+          {
+            text: "Membuat publikasi resmi melalui media sosial Polres bahwa institusi akan menindak tegas pelaku penyalahgunaan narkoba tanpa pandang bulu, termasuk anggota sendiri.",
+            skor: 2
+          }
+        ]
+      },
+      {
+        soal: "15. Anda adalah Bupati di sebuah kabupaten yang memiliki wilayah adat kuat. Saat ini terjadi konflik sengketa tanah adat antara masyarakat adat dengan investor perkebunan kelapa sawit. Masyarakat adat menolak pembukaan lahan karena meyakini tanah tersebut merupakan warisan leluhur yang sakral. Namun di sisi lain, investor memiliki HGU resmi dan mengancam akan menggugat pemerintah daerah jika aktivitas usaha mereka dihalangi. Konflik mulai memanas dan berpotensi menimbulkan kericuhan besar. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Mengajukan permohonan fasilitasi penyelesaian konflik kepada Kementerian ATR/BPN dan Kementerian Dalam Negeri agar penanganan memiliki dasar hukum nasional yang kuat.",
+            skor: 3
+          },
+          {
+            text: "Mengeluarkan surat edaran penghentian sementara semua aktivitas perusahaan di lahan sengketa untuk meredam potensi konflik horizontal di lapangan.",
+            skor: 2
+          },
+          {
+            text: "Menginstruksikan Dinas Pertanahan dan Bagian Hukum untuk menelaah legalitas HGU perusahaan dan mempersiapkan opsi peninjauan ulang jika ditemukan pelanggaran administrasi.C",
+            skor: 4
+          },
+          {
+            text: "Menyiapkan program pemberdayaan ekonomi alternatif bagi masyarakat adat melalui Dinas Koperasi dan UMKM untuk mengurangi ketergantungan pada lahan sengketa tersebut.",
+            skor: 1
+          },
+          {
+            text: "Menugaskan Asisten I bidang Pemerintahan untuk menyiapkan rencana mediasi lintas pihak dengan menghadirkan tokoh adat, MUI, lembaga adat, dan perwakilan investor di pendopo kabupaten.",
+            skor: 5
+          }
+        ]
+      },
+      {
+        soal: "16. Anda adalah Kepala Dinas Kesehatan Kabupaten. Dalam dua minggu terakhir, terjadi lonjakan kasus Demam Berdarah Dengue (DBD) di beberapa kecamatan, termasuk korban jiwa anak-anak. Rumah sakit mulai penuh dan banyak pasien dirawat di lorong RSUD. Wilayah Anda dikenal memiliki budaya masyarakat yang masih enggan melakukan 3M (menguras, menutup, mengubur) dan lebih percaya pengasapan (fogging) sebagai satu-satunya solusi. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Mengeluarkan surat edaran Bupati tentang Gerakan Serentak PSN dan Fogging Fokus di seluruh desa terdampak dalam satu pekan ke depan.",
+            skor: 3
+          },
+          {
+            text: "Mengajukan permohonan bantuan tenaga medis tambahan ke Dinas Kesehatan Provinsi untuk menambah kapasitas penanganan pasien di rumah sakit.",
+            skor: 2
+          },
+          {
+            text: "Menugaskan Bidang P2P (Pencegahan dan Pengendalian Penyakit) untuk melakukan investigasi epidemiologi mendalam di daerah kasus tertinggi untuk menentukan pola penyebaran DBD.",
+            skor: 5
+          },
+          {
+            text: "Membuat publikasi resmi di media sosial dan radio lokal tentang tingginya kasus DBD dan himbauan kewaspadaan serta langkah pencegahan mandiri di rumah.",
+            skor: 1
+          },
+          {
+            text: "Menginstruksikan seluruh Puskesmas untuk segera melakukan penyuluhan door to door kepada warga tentang pentingnya pemberantasan sarang nyamuk (PSN) berbasis perilaku keluarga.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "17. Anda adalah Kepala Sekolah SMP Negeri di daerah dengan kekayaan budaya lokal yang kuat. Hasil supervisi mengungkapkan bahwa banyak guru mengajar dengan metode monoton dan kurang memanfaatkan kearifan lokal, sehingga siswa mudah bosan dan capaian pembelajaran menurun. Sekolah Anda sedang bersiap mengikuti penilaian sekolah berbasis budaya daerah tahun ini. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: " Menginstruksikan guru untuk mengintegrasikan materi budaya daerah dalam RPP dan LKPD mereka, serta mengadakan monitoring mingguan untuk memastikan pelaksanaan.",
+            skor: 3
+          },
+          {
+            text: "Menugaskan Wakasek Kurikulum menyusun program pelatihan inovasi pembelajaran berbasis budaya lokal untuk semua guru dalam waktu dekat.",
+            skor: 5
+          },
+          {
+            text: "Membuat kebijakan pemberian insentif bagi guru yang berhasil menerapkan metode pembelajaran inovatif berbasis budaya lokal dengan hasil belajar siswa tinggi.",
+            skor: 2
+          },
+          {
+            text: "Mengundang tokoh adat dan budayawan daerah untuk memberikan workshop pemanfaatan budaya lokal dalam pembelajaran di sekolah Anda.",
+            skor: 4
+          },
+          {
+            text: "Mengeluarkan surat edaran wajib penggunaan metode pembelajaran berbasis budaya lokal pada mata pelajaran IPS dan Bahasa Indonesia mulai minggu depan.",
+            skor: 1
+          }
+        ]
+      },
+      {
+        soal: "18. Anda adalah Kepala Sekolah SMA Negeri di kota kabupaten. Kemarin sore, sekelompok siswa sekolah Anda terlibat tawuran dengan sekolah lain di luar lingkungan sekolah. Video tawuran tersebut viral di media sosial dan memicu keresahan masyarakat, serta menurunkan citra sekolah Anda. Dinas Pendidikan meminta klarifikasi dan langkah penanganan segera. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan Wakasek Kesiswaan dan guru BK untuk memanggil seluruh siswa pelaku tawuran beserta orang tua mereka untuk diberikan pembinaan dan peringatan keras.",
+            skor: 5
+          },
+          {
+            text: "Menugaskan guru BK untuk melakukan asesmen psikologis terhadap siswa pelaku tawuran untuk mengetahui faktor penyebab perilaku agresif mereka.",
+            skor: 4
+          },
+          {
+            text: "Membuat surat permohonan maaf resmi kepada sekolah lain dan masyarakat melalui media sosial sekolah untuk meredam keresahan publik.",
+            skor: 1
+          },
+          {
+            text: "Mengundang Polsek setempat untuk memberikan penyuluhan hukum tentang tawuran dan ancaman pidananya kepada seluruh siswa di lapangan upacara.",
+            skor: 3
+          },
+          {
+            text: "Mengadakan rapat dewan guru untuk menyusun program pencegahan tawuran, termasuk mengaktifkan kembali ekstrakurikuler bela diri dan seni tradisional daerah.",
+            skor: 2
+          }
+        ]
+      },
+      {
+        soal: "19. Anda adalah Direktur Utama BUMN bidang konstruksi. Pagi ini terjadi kecelakaan kerja massal di salah satu proyek tol elevated besar akibat runtuhnya bagian struktur sementara, mengakibatkan belasan pekerja luka berat dan ringan. Peristiwa ini viral dan menimbulkan kecaman publik atas lemahnya K3 (Keselamatan dan Kesehatan Kerja) perusahaan Anda. Menteri BUMN meminta laporan penanganan darurat dan rencana mitigasi agar kasus serupa tidak terulang. Apa yang anda akan lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan tim K3 perusahaan untuk melakukan investigasi menyeluruh penyebab kecelakaan dan melaporkan dalam waktu 24 jam.",
+            skor: 5
+          },
+          {
+            text: "Mengajukan permohonan bantuan medis tambahan ke rumah sakit rujukan terdekat untuk mempercepat penanganan korban luka berat.",
+            skor: 4
+          },
+          {
+            text: "Membuat pernyataan resmi permintaan maaf kepada publik, keluarga korban, dan pemerintah atas kelalaian yang terjadi.",
+            skor: 2
+          },
+          {
+            text: "Menugaskan seluruh Project Manager di proyek lain untuk melakukan inspeksi K3 darurat guna mencegah risiko serupa.",
+            skor: 1
+          },
+          {
+            text: "Mengundang serikat pekerja dan perwakilan korban untuk menyampaikan dukungan moril dan kesiapan perusahaan menanggung biaya pengobatan sepenuhnya.",
+            skor: 3
+          }
+        ]
+      },
+      {
+        soal: "20. Anda adalah Kepala Dinas Sosial Kota. Dalam tiga bulan terakhir, jumlah anak jalanan meningkat drastis, terutama di pusat perbelanjaan dan lampu merah. Banyak di antara mereka putus sekolah dan berasal dari keluarga tidak mampu di pinggiran kota. Wali Kota meminta Anda segera menyiapkan langkah strategis penanganan dan pencegahan agar masalah ini tidak semakin meluas. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menyusun proposal pengajuan program pelatihan keterampilan kerja dan kewirausahaan bagi anak jalanan remaja kepada Kementerian Sosial RI.",
+            skor: 3
+          },
+          {
+            text: "Membuat surat edaran kepada seluruh camat dan lurah untuk mengaktifkan kembali rumah singgah sementara dan dapur umum untuk anak jalanan di wilayah masing-masing.",
+            skor: 2
+          },
+          {
+            text: " Menginstruksikan seluruh pendamping sosial dan pekerja sosial untuk melakukan pendataan menyeluruh dan penjangkauan anak jalanan di seluruh wilayah kota dalam waktu satu minggu.",
+            skor: 5
+          },
+          {
+            text: "Mengajukan permohonan tambahan anggaran kepada DPRD Kota untuk pembangunan panti rehabilitasi anak jalanan dan pengadaan mobil pelayanan sosial keliling.",
+            skor: 1
+          },
+          {
+            text: "Mengundang organisasi keagamaan dan LSM pemerhati anak untuk menyusun program kolaborasi penanganan dan rehabilitasi anak jalanan.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "21. Anda adalah Kepala Dinas Komunikasi dan Informatika (Diskominfo) Kabupaten X. Saat ini, server utama data kependudukan daerah mengalami gangguan jaringan dan potensi kebocoran data, mengakibatkan layanan administrasi di kecamatan-kecamatan terganggu total. Sementara, data-data penting seperti e-KTP, KK, dan perizinan terintegrasi di dalam server tersebut. Tim teknis internal Anda telah melaporkan bahwa kemungkinan besar penyebab gangguan adalah serangan siber ransomware yang mengenkripsi seluruh data dan meminta tebusan dalam waktu 24 jam. Anda memiliki anggaran terbatas, dan jika membayar tebusan, data bisa kembali namun risiko serangan serupa tetap tinggi. Jika tidak membayar, seluruh data bisa hilang. Di saat yang sama, masyarakat menuntut layanan kembali normal secepatnya karena menghambat aktivitas administrasi vital. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Segera membayar tebusan ransomware untuk memulihkan seluruh data secepatnya sehingga pelayanan masyarakat dapat berjalan kembali normal tanpa perlu menunggu proses pemulihan yang panjang.",
+            skor: 2
+          },
+          {
+            text: "Menunda pengambilan keputusan hingga ada instruksi resmi dari Bupati dan Sekda, sambil menenangkan masyarakat dengan surat edaran bahwa layanan akan normal setelah dilakukan perbaikan teknis.",
+            skor: 1
+          },
+          {
+            text: "Membentuk tim krisis internal khusus dengan mengundang seluruh kepala bidang dan tim IT untuk rapat darurat membahas penanganan ransomware secara kolektif dan membuat keputusan pembayaran tebusan atau tidak dalam waktu cepat.",
+            skor: 4
+          },
+          {
+            text: "Menghubungi Badan Siber dan Sandi Negara (BSSN) serta penyedia keamanan siber nasional untuk melakukan investigasi menyeluruh, mengisolasi server terdampak, dan memulai proses pemulihan data melalui backup serta mitigasi tanpa membayar tebusan.",
+            skor: 5
+          },
+          {
+            text: "Memerintahkan tim IT internal segera melakukan format ulang server dan instalasi ulang sistem dengan konsekuensi kehilangan semua data lama demi mengembalikan operasional layanan dasar sesegera mungkin.",
+            skor: 3
+          }
+        ]
+      },
+      {
+        soal: "22. Anda adalah Kepala Bagian Kepegawaian di Kementerian X. Baru saja Anda mengimplementasikan sistem absensi online berbasis GPS dan fingerprint untuk seluruh pegawai, guna meningkatkan disiplin dan akurasi kehadiran. Namun dalam sebulan terakhir, muncul banyak keluhan pegawai di daerah terpencil karena sinyal internet tidak stabil, sehingga mereka dianggap bolos padahal hadir di lokasi kerja. Akibatnya, motivasi dan kinerja mereka menurun.Di sisi lain, pimpinan kementerian menuntut absensi online ini tetap diterapkan untuk mendukung integrasi data nasional ASN. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: " Menyampaikan kepada pegawai bahwa kebijakan absensi online sudah menjadi keputusan pusat dan tetap diterapkan demi integrasi data nasional, sambil meminta mereka mencari cara agar absensi mereka tetap terekam.",
+            skor: 2
+          },
+          {
+            text: "Mengusulkan kepada pimpinan untuk mengevaluasi ulang kebijakan absensi online dan menunda penerapannya di daerah terpencil sampai jaringan internet stabil sepenuhnya.",
+            skor: 4
+          },
+          {
+            text: "Menginstruksikan tim IT dan kepegawaian untuk menyusun mekanisme absensi alternatif berbasis offline sync atau manual khusus untuk daerah terpencil sambil tetap melaporkan data ke pusat secara berkala.",
+            skor: 5
+          },
+          {
+            text: "Mengadakan pelatihan daring bagi seluruh pegawai di daerah terpencil tentang cara mengoptimalkan sinyal dan penggunaan absensi online secara benar agar kendala teknis dapat diminimalkan.",
+            skor: 3
+          },
+          {
+            text: "Menyurati provider internet daerah untuk mempercepat pembangunan infrastruktur jaringan demi mendukung kebijakan absensi online agar pegawai tidak lagi mengalami kendala teknis.",
+            skor: 1
+          }
+        ]
+      },
+      {
+        soal: "23. Anda adalah Kepala Biro Hukum dan Teknologi Informasi di Kementerian X. Saat ini, banyak staf Anda menggunakan aplikasi AI generatif (seperti ChatGPT dan AI image generator gratis) untuk membuat laporan cepat dan desain publikasi internal. Namun, tim keamanan data melaporkan bahwa beberapa draft kebijakan dan data pegawai terdeteksi bocor ke platform AI publik karena tidak ada kebijakan resmi tentang penggunaannya. Padahal, penggunaan AI generatif terbukti meningkatkan produktivitas staf secara signifikan. Jika dihentikan mendadak, kinerja biro akan turun drastis; jika dibiarkan, risiko kebocoran data rahasia negara makin tinggi. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan tim IT untuk segera memblokir seluruh akses ke platform AI generatif di jaringan kantor sambil mempersiapkan kebijakan resmi penggunaan AI di kementerian.",
+            skor: 4
+          },
+          {
+            text: "Mengadakan pelatihan intensif kepada seluruh staf tentang cara penggunaan AI generatif secara aman dan etis, lalu mengizinkan penggunaan AI dengan pembatasan ketat pada jenis data yang boleh diunggah.",
+            skor: 3
+          },
+          {
+            text: "Mengusulkan kepada Menteri untuk mengeluarkan kebijakan nasional terkait penggunaan AI generatif di seluruh kementerian, lalu menunggu keputusan sebelum menetapkan aturan di biro Anda.",
+            skor: 2
+          },
+          {
+            text: "Menginstruksikan tim keamanan data dan IT untuk menyusun pedoman penggunaan AI generatif yang aman dan melatih staf, sambil melaporkan kebijakan sementara ini kepada Sekjen untuk mendapat persetujuan segera.",
+            skor: 5
+          },
+          {
+            text: "Mengeluarkan surat edaran larangan penggunaan AI generatif hingga ada kebijakan resmi dari kementerian, sambil mengizinkan staf yang mendesak tetap menggunakan AI dengan izin khusus pimpinan.",
+            skor: 1
+          }
+        ]
+      },
+      {
+        soal: "24. Anda adalah Kepala Bidang Infrastruktur TIK pada Dinas Kominfo Provinsi X. Website pelayanan publik provinsi Anda (termasuk layanan perizinan, pajak daerah, dan pengaduan masyarakat) mengalami serangan DDoS masif sejak pagi hari, sehingga seluruh akses masyarakat terhenti total. Tim teknis internal berusaha memblokir IP penyerang, tetapi serangan semakin besar dan bersumber dari ribuan IP berbeda (botnet internasional). Sementara itu, pimpinan daerah meminta website segera normal karena banyak layanan publik terganggu, sedangkan masyarakat mengeluhkan tidak bisa membayar pajak dan mengurus izin mendesak. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menghubungi provider hosting dan internet Anda untuk melakukan mitigasi DDoS melalui scrubbing center atau firewall cloud, sambil mengumumkan di media sosial pemerintah bahwa website sedang dalam perbaikan.",
+            skor: 5
+          },
+          {
+            text: "Memerintahkan tim teknis internal memindahkan website ke server cadangan lokal yang lebih kecil namun sementara dapat melayani masyarakat dengan kecepatan terbatas.",
+            skor: 3
+          },
+          {
+            text: "Menginstruksikan tim membuat backup penuh seluruh data website dan men-shutdown sementara server utama untuk mengurangi risiko kerusakan atau kebocoran data akibat serangan DDoS yang terus meningkat.",
+            skor: 4
+          },
+          {
+            text: "Mengusulkan kepada pimpinan daerah untuk menyewa konsultan keamanan siber nasional guna menelusuri sumber botnet dan membuat strategi mitigasi permanen terhadap DDoS di kemudian hari.",
+            skor: 1
+          },
+          {
+            text: "Mengumumkan kepada masyarakat untuk sementara menggunakan layanan manual di kantor dinas terkait, sambil menunggu tim teknis menyelesaikan permasalahan serangan DDoS dalam 1–2 hari ke depan.",
+            skor: 2
+          }
+        ]
+      },
+      {
+        soal: "25. Anda adalah Kepala Bidang Data dan Teknologi Informasi di Bappeda Provinsi X. Saat ini, pemerintah provinsi sedang mengintegrasikan big data kesehatan (BPJS daerah, Dinas Kesehatan) dengan big data pendidikan (Dinas Pendidikan dan sekolah-sekolah) untuk program penanganan gizi buruk dan putus sekolah berbasis data terpadu. Namun, dalam proses integrasi, terjadi kesalahan mapping data NIK dan nama siswa, sehingga ratusan anak tercatat ganda atau hilang dari sistem. Jika data ini segera digunakan untuk intervensi program, banyak bantuan akan salah sasaran. Di sisi lain, Gubernur menargetkan program ini diluncurkan minggu depan dengan konferensi pers besar sebagai program unggulan provinsi. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Mengarahkan tim untuk menggunakan data yang sudah ada sekarang demi memenuhi target peluncuran, sambil menyiapkan kebijakan perbaikan data di tahap evaluasi program.",
+            skor: 1
+          },
+          {
+            text: "Mengusulkan peluncuran program tetap dilaksanakan sesuai jadwal, sambil melakukan perbaikan data secara paralel dan memberikan klarifikasi jika ada kesalahan sasaran bantuan nanti.",
+            skor: 2
+          },
+          {
+            text: "Meminta tim IT menghapus seluruh data integrasi yang salah dan memulai integrasi ulang dari awal agar hasil data benar-benar valid dan bersih sebelum program diluncurkan.",
+            skor: 4
+          },
+          {
+            text: "Menginstruksikan tim data untuk segera memperbaiki mapping NIK dan nama siswa sebelum data digunakan, meskipun peluncuran program terpaksa diundur hingga data bersih.",
+            skor: 5
+          },
+          {
+            text: "Melaporkan masalah kesalahan integrasi data ini kepada Gubernur dan Sekda, lalu menunggu arahan kebijakan lebih lanjut terkait langkah berikutnya.",
+            skor: 3
+          }
+        ]
+      },
+      {
+        soal: "26. Anda adalah Kepala Dinas Komunikasi dan Informatika Kabupaten X. Pemerintah pusat mewajibkan seluruh daerah memigrasikan data ke cloud computing nasional untuk integrasi layanan publik dan keamanan data. Namun, server lokal Pemda Anda baru di-upgrade dengan biaya besar tahun lalu. Tim pengelola server lokal menolak migrasi cloud, khawatir kehilangan peran strategis mereka, dan berpendapat server lokal lebih aman karena sepenuhnya dikelola daerah. Jika Anda memaksa migrasi, muncul potensi resistensi dan sabotase pasif dari tim server lokal yang merasa dikesampingkan. Jika Anda menunda, Anda melanggar instruksi nasional yang berbatas waktu. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Segera melaksanakan migrasi data ke cloud computing nasional sesuai instruksi pusat meskipun tim server lokal menolak, karena kepatuhan kebijakan lebih penting daripada resistensi internal.",
+            skor: 3
+          },
+          {
+            text: "Menunda proses migrasi cloud nasional sampai tim server lokal merasa siap dan bersedia mendukung, sambil membuat laporan progress bulanan ke pemerintah pusat.",
+            skor: 2
+          },
+          {
+            text: "Mengadakan pertemuan khusus dengan tim server lokal untuk menjelaskan urgensi kebijakan migrasi cloud, mendengarkan kekhawatiran mereka, dan merumuskan peran baru mereka dalam pengelolaan dan keamanan data berbasis cloud.",
+            skor: 5
+          },
+          {
+            text: "Mengusulkan kepada pemerintah pusat agar kabupaten Anda tetap menggunakan server lokal, dengan argumentasi bahwa server baru masih memiliki kapasitas yang cukup untuk melayani kebutuhan data daerah.",
+            skor: 1
+          },
+          {
+            text: "Menginstruksikan tim server lokal untuk tetap mengelola data pada server mereka, sambil melakukan backup seluruh data ke cloud computing nasional tanpa memberi tahu pemerintah pusat untuk sementara waktu.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "27. Anda adalah Kepala Dinas Komunikasi dan Informatika Kabupaten X. Pemerintah daerah sedang mengimplementasikan program smart city tahap awal berupa pemasangan CCTV dan sensor lingkungan di kawasan kota dan desa wisata adat. Tujuannya untuk meningkatkan keamanan, layanan publik, dan integrasi data daerah sesuai target RPJMD serta instruksi pusat. Namun, masyarakat adat menolak pemasangan CCTV di kawasan mereka, menganggapnya melanggar kesakralan adat dan privasi warga. Jika program dibatalkan, target RPJMD dan serapan anggaran gagal. Jika dipaksakan, konflik sosial akan terjadi. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Membatalkan pemasangan CCTV di seluruh kawasan adat, dan mengembalikan sisa anggaran ke kas daerah untuk menghindari konflik sosial dan menjaga kehormatan adat.",
+            skor: 3
+          },
+          {
+            text: "Melaksanakan pemasangan CCTV di kawasan adat secara diam-diam saat malam hari, lalu mengoperasikannya keesokan harinya dengan tetap menugaskan petugas keamanan menjaga lokasi.",
+            skor: 1
+          },
+          {
+            text: "Mengganti program CCTV di kawasan adat dengan program TIK lain, seperti pengadaan komputer sekolah adat, agar serapan anggaran dan target program TIK tetap tercapai.",
+            skor: 4
+          },
+          {
+            text: "Mengganti program CCTV di kawasan adat dengan program TIK lain, seperti pengadaan komputer sekolah adat, agar serapan anggaran dan target program TIK tetap tercapai.",
+            skor: 2
+          },
+          {
+            text: "Segera memindahkan alokasi CCTV dan sensor lingkungan ke kawasan lain yang memiliki urgensi keamanan tinggi agar target RPJMD tetap tercapai tanpa menimbulkan penolakan adat.",
+            skor: 5
+          }
+        ]
+      },
+      {
+        soal: "28. Anda adalah Kepala Bidang TIK di Dinas Kesehatan Kabupaten X. RSUD daerah melaporkan bahwa seluruh server data pasien, farmasi, dan keuangan terkunci akibat serangan ransomware sejak dini hari. Layanan pasien terganggu total, pendaftaran tidak berjalan, dan pihak rumah sakit menerima permintaan tebusan 100 juta rupiah dalam waktu 12 jam. Jika tebusan tidak dibayar, seluruh data akan dihapus permanen. Backup server ada, namun tidak pernah diuji coba dan tim IT RSUD menyatakan pemulihan akan memakan waktu minimal 7 hari kerja. Sementara, Bupati menuntut pelayanan normal hari ini juga karena RSUD merupakan pusat rujukan kabupaten. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Segera menginstruksikan pembayaran tebusan ransomware menggunakan dana darurat RSUD, agar layanan pasien bisa pulih secepatnya dan krisis tidak meluas.",
+            skor: 2
+          },
+          {
+            text: "Menghubungi Badan Siber dan Sandi Negara (BSSN) dan penyedia keamanan siber nasional, meminta mereka menangani serangan, memulihkan data melalui backup aman, dan menolak pembayaran tebusan.",
+            skor: 5
+          },
+          {
+            text: "Meminta tim IT RSUD memformat ulang seluruh server dan melakukan instalasi ulang sistem, meskipun seluruh data lama akan hilang, demi mengaktifkan layanan rumah sakit hari ini juga.",
+            skor: 4
+          },
+          {
+            text: "Mengalihkan seluruh layanan pasien ke rumah sakit swasta dan puskesmas daerah sementara, sambil menunggu tim IT RSUD menyelesaikan pemulihan server dalam waktu 7 hari kerja.",
+            skor: 3
+          },
+          {
+            text: "Menginstruksikan tim IT RSUD untuk memutus seluruh jaringan internet rumah sakit, kemudian menyalakan kembali server satu per satu untuk menonaktifkan ransomware secara manual.",
+            skor: 1
+          }
+        ]
+      },
+      {
+        soal: "29. Anda adalah Kepala Bidang Infrastruktur TIK di Dinas Kominfo Provinsi X. Saat terjadi bencana alam gempa bumi dan longsor besar, akses internet dan layanan publik digital daerah Anda lumpuh total karena data center nasional di wilayah lain mengalami kerusakan parah. Server cadangan pusat sedang overload, sehingga semua sistem e-government dan aplikasi layanan publik provinsi Anda tidak dapat diakses. Sementara, ribuan masyarakat membutuhkan akses layanan digital darurat, termasuk pendaftaran pengungsi, distribusi logistik, dan layanan kesehatan online. Pemerintah pusat belum dapat memastikan kapan data center pulih, dan Gubernur meminta solusi hari ini juga.",
+        opsi: [{
+            text: "Segera memigrasikan seluruh aplikasi layanan publik provinsi ke cloud computing komersial (misalnya AWS atau Google Cloud) untuk memulihkan akses digital masyarakat secepatnya.",
+            skor: 5
+          },
+          {
+            text: "Menginstruksikan seluruh OPD untuk menghentikan layanan digital dan melaksanakan layanan publik secara manual hingga data center nasional kembali normal.",
+            skor: 2
+          },
+          {
+            text: "Membuat pengumuman resmi di media sosial dan radio lokal agar masyarakat menunggu hingga data center nasional pulih dalam beberapa hari ke depan.",
+            skor: 1
+          },
+          {
+            text: "Mengaktifkan server lokal disaster recovery provinsi untuk menjalankan layanan prioritas seperti pendaftaran pengungsi dan distribusi logistik.",
+            skor: 4
+          },
+          {
+            text: "Menghubungi penyedia internet dan meminta bandwidth tambahan, agar trafik internet daerah tetap stabil meskipun data center nasional masih down.",
+            skor: 3
+          }
+        ]
+      },
+      {
+        soal: "30. Anda adalah Kepala Bidang Informasi Publik Dinas Kominfo Provinsi X. Dalam 24 jam terakhir, beredar video deepfake yang menampilkan Gubernur Anda sedang menerima suap dari pihak swasta. Video tersebut tersebar masif di media sosial dan grup WhatsApp masyarakat. Faktanya, video tersebut palsu, dibuat dengan AI generatif deepfake, namun masyarakat sudah terlanjur percaya dan memicu demo di kantor gubernur. Gubernur menuntut agar reputasinya segera dibersihkan hari ini juga. Anda memiliki tim media sosial, tim TIK, dan akses langsung ke akun resmi pemerintah daerah. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menghubungi platform media sosial untuk men-takedown video deepfake tersebut, sambil menunggu proses verifikasi pihak platform sebelum publikasi klarifikasi resmi.",
+            skor: 3
+          },
+          {
+            text: "Menghapus seluruh komentar dan postingan netizen yang menyebarkan video tersebut di akun media sosial resmi pemerintah daerah.",
+            skor: 2
+          },
+          {
+            text: "Segera merilis klarifikasi resmi di seluruh media sosial pemerintah daerah, disertai bukti video tersebut adalah deepfake, untuk menghentikan penyebaran hoaks secepatnya.",
+            skor: 5
+          },
+          {
+            text: "Membiarkan isu beredar tanpa klarifikasi terlebih dahulu, karena masyarakat pada akhirnya akan mengetahui kebenaran bahwa video tersebut palsu.",
+            skor: 1
+          },
+          {
+            text: "Meminta tim TIK melacak pembuat video deepfake tersebut, lalu menyerahkannya ke kepolisian untuk diproses hukum sesuai UU ITE.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "31. Anda adalah Kepala Dinas Pendidikan Provinsi X. Baru saja Anda menerima laporan dari kepala sekolah SMA Negeri 1 bahwa terdapat guru yang terindikasi menyebarkan paham radikalisme kepada siswa melalui kajian agama di luar jam pelajaran. Saat dipanggil, guru tersebut membantah keras, namun siswa dan beberapa guru lain telah mengonfirmasi adanya ajakan intoleransi terhadap agama lain. Jika Anda langsung memecat guru tersebut, Anda khawatir akan muncul protes dari ormas pendukungnya dan mengganggu ketertiban sekolah. Jika Anda membiarkannya, maka paham radikalisme akan semakin berkembang. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Memindahkan guru tersebut ke sekolah lain yang jauh dari kota, agar tidak menimbulkan konflik di sekolah saat ini dan meminimalisir keresahan siswa dan guru lain.",
+            skor: 2
+          },
+          {
+            text: "Memberikan sanksi administratif berupa teguran tertulis, tanpa menonaktifkan guru tersebut, sambil menunggu hasil investigasi lebih lengkap dari Inspektorat Daerah.",
+            skor: 3
+          },
+          {
+            text: "Melaporkan guru tersebut ke pihak kepolisian dengan tuduhan penyebaran radikalisme, agar diproses hukum sesuai UU Terorisme meskipun bukti baru berupa keterangan saksi.",
+            skor: 1
+          },
+          {
+            text: "Membiarkan guru tersebut tetap mengajar seperti biasa, sambil mengawasi dan mengumpulkan bukti yang lebih kuat sebelum mengambil keputusan final.",
+            skor: 4
+          },
+          {
+            text: "Menonaktifkan sementara guru tersebut dari tugas mengajar, sambil menugaskan tim pengawas sekolah dan BK untuk menangani keresahan siswa dan melaporkan perkembangan setiap hari.",
+            skor: 5
+          }
+        ]
+      },
+      {
+        soal: "32. Anda adalah Kepala Badan Kepegawaian Daerah (BKD) Provinsi X. Terdapat laporan bahwa seorang ASN di Dinas Perhubungan aktif mengunggah konten radikal dan intoleran di media sosial pribadinya. Kontennya berisi ajakan mendirikan negara agama dan menolak Pancasila sebagai dasar negara. ASN tersebut dikenal sangat rajin dan berprestasi dalam pekerjaannya, sehingga banyak rekan kerjanya segan menegur. Jika Anda menindak tegas, akan ada gejolak di internal dinas. Jika dibiarkan, akan membahayakan ideologi negara dan menular pada ASN lain. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Memindahkan ASN tersebut ke unit kerja lain yang tidak berhubungan langsung dengan publik, agar pengaruhnya terhadap pegawai lain berkurang tanpa menimbulkan konflik terbuka.",
+            skor: 3
+          },
+          {
+            text: "Memberikan peringatan lisan melalui atasannya langsung, agar yang bersangkutan berhenti menyebarkan konten radikal, tanpa perlu proses formal yang dapat menimbulkan kegaduhan.",
+            skor: 2
+          },
+          {
+            text: "Menonaktifkan ASN tersebut dari pekerjaannya sementara, sambil mengajukan laporan resmi ke BKN dan BNPT untuk langkah penanganan lanjutan sesuai aturan nasional.",
+            skor: 5
+          },
+          {
+            text: "Melaporkan ASN tersebut ke kepolisian, meskipun belum ada tindakan nyata selain unggahan di media sosial, agar memberi efek jera pada ASN lain.",
+            skor: 1
+          },
+          {
+            text: "Membiarkan ASN tersebut tetap bekerja seperti biasa, sambil memantau aktivitas medsosnya lebih intensif untuk mengumpulkan bukti tambahan sebelum ada tindakan formal.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "33. Anda adalah Rektor IPDN Kampus Utama. Anda mendapat laporan dari Wakil Rektor Bidang Kemahasiswaan bahwa sekelompok praja aktif mengadakan pengajian eksklusif tertutup di asrama, dengan materi yang mengarah pada penolakan ideologi Pancasila dan sistem demokrasi, serta terdapat ajakan menolak upacara bendera. Jika dibiarkan, paham ini akan menyebar cepat. Namun, jika ditindak keras, dikhawatirkan memicu gerakan bawah tanah dan perlawanan senyap yang lebih sulit diawasi. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Memanggil seluruh praja yang terlibat dan memberi sanksi skorsing sementara, agar mereka jera dan tidak mengulangi tindakan intoleran dan anti-Pancasila.",
+            skor: 3
+          },
+          {
+            text: "Menginstruksikan Wakil Rektor Bidang Kemahasiswaan untuk membubarkan kelompok tersebut secara langsung, serta melarang kegiatan pengajian di seluruh asrama hingga waktu yang tidak ditentukan.",
+            skor: 2
+          },
+          {
+            text: "Menugaskan tim intelijen kampus untuk memantau kegiatan kelompok tersebut secara diam-diam, mengumpulkan bukti yang lebih kuat sebelum melakukan tindakan formal.",
+            skor: 4
+          },
+          {
+            text: "Mengeluarkan Surat Edaran Rektor yang melarang seluruh kegiatan keagamaan eksklusif di asrama, sambil memperkuat kegiatan kebangsaan dan bela negara secara masif.",
+            skor: 1
+          },
+          {
+            text: "Menugaskan dosen pembina ideologi kampus untuk menyisipkan materi kontra-radikalisme di setiap pertemuan kelompok tersebut, sambil mengevaluasi pembina kegiatan dan seluruh materinya.",
+            skor: 5
+          }
+        ]
+      },
+      {
+        soal: "34. Anda adalah Kepala Badan Kepegawaian Daerah (BKD) Provinsi X. Seorang ASN di Dinas Perindustrian menolak mengikuti upacara bendera setiap Senin dengan alasan keyakinan ideologinya yang menolak penghormatan terhadap bendera dan lagu kebangsaan. Atasan langsung ASN tersebut sudah menegurnya beberapa kali, namun dia tetap bersikukuh. ASN lain mulai resah dan mempertanyakan kewibawaan pimpinan dalam menegakkan disiplin ASN. Jika Anda menindak keras, khawatir muncul perlawanan hukum dari organisasi pendukung ASN tersebut. Jika dibiarkan, kedisiplinan dan nasionalisme ASN lain akan menurun drastis. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan atasan langsung ASN tersebut untuk membuat laporan pelanggaran disiplin berat, agar dapat segera diajukan pemecatan sesuai PP Nomor 94 Tahun 2021 tentang Disiplin PNS.",
+            skor: 5
+          },
+          {
+            text: "Memindahkan ASN tersebut ke bagian administrasi non-publik, agar tidak menjadi contoh buruk di depan pegawai lain meskipun tidak mengubah keyakinan ideologinya.",
+            skor: 2
+          },
+          {
+            text: "Mengirimkan ASN tersebut mengikuti pelatihan wawasan kebangsaan di LAN atau BPSDM Provinsi, agar pemahaman nasionalismenya meningkat meskipun membutuhkan waktu lama.",
+            skor: 4
+          },
+          {
+            text: "Memberikan peringatan tertulis terakhir kepada ASN tersebut, sambil menugaskan tim pembina kepegawaian untuk terus memantau perilakunya setiap hari.",
+            skor: 3
+          },
+          {
+            text: "Memanggil ASN tersebut ke kantor BKD dan memberikan pembinaan khusus secara personal, untuk mendengarkan alasannya dan mencari jalan tengah tanpa melibatkan sanksi administratif.",
+            skor: 1
+          }
+        ]
+      },
+      {
+        soal: "35. Anda adalah Kepala Dinas Pendidikan Kabupaten X. Terdapat laporan bahwa seorang guru PNS di SMP Negeri 2 aktif mengajarkan konsep khilafah sebagai sistem pemerintahan ideal, menyebut Pancasila sebagai sistem kufur dalam ceramah agama di kelas. Beberapa orang tua siswa mulai melapor dan menuntut guru tersebut dipecat segera, sedangkan organisasi tertentu mendukung guru itu dan mengancam akan berdemonstrasi jika dia dihukum. Jika Anda menindak tegas, akan memicu konflik sosial dan tekanan ormas. Jika Anda membiarkan, maka paham radikalisme akan meluas di sekolah.",
+        opsi: [{
+            text: "Segera menonaktifkan guru tersebut dari kegiatan mengajar dan memproses pelanggarannya melalui Inspektorat Daerah, agar ada kepastian hukum sebelum memutuskan pemecatan.",
+            skor: 5
+          },
+          {
+            text: "Memindahkan guru tersebut ke sekolah lain yang jauh dari pusat kota, agar tidak menimbulkan gejolak di sekolah saat ini meskipun tidak mengubah ideologinya.",
+            skor: 2
+          },
+          {
+            text: "Memberikan pembinaan khusus kepada guru tersebut bersama tim moderasi beragama Kemenag, agar dia memahami bahwa khilafah bertentangan dengan Pancasila sebelum diberikan sanksi apapun.",
+            skor: 4
+          },
+          {
+            text: "Melaporkan guru tersebut ke kepolisian atas tuduhan pelanggaran UU ITE dan UU Terorisme, agar ada efek jera bagi guru lain meskipun belum ada tindakan kekerasan fisik.",
+            skor: 3
+          },
+          {
+            text: "Membiarkan guru tersebut mengajar seperti biasa, sambil memantau dan mengumpulkan bukti tambahan sebelum mengambil tindakan tegas.",
+            skor: 1
+          }
+        ]
+      },
+      {
+        soal: "36. Anda adalah Kepala Bidang Perencanaan di Bappeda Provinsi X. Saat ini, Anda sedang menyusun proposal hibah pembangunan kawasan ekonomi khusus (KEK) ke pemerintah pusat. Namun, Anda menyadari bahwa provinsi lain juga mengajukan proposal serupa dengan konsep yang hampir sama, dan selama ini pejabat pusat cenderung lebih mengenal tim provinsi lain tersebut. Jika Anda hanya mengandalkan isi proposal, peluang persetujuan sangat kecil karena kompetisi ketat. Waktu pengajuan tinggal 5 hari, sementara Anda belum memiliki relasi dekat dengan pejabat pusat yang menangani program hibah ini. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan tim Anda untuk merevisi ulang proposal dengan menambahkan banyak lampiran pendukung, meskipun belum tentu diminta oleh kementerian pusat.",
+            skor: 3
+          },
+          {
+            text: "Meminta Bappeda provinsi lain yang pernah lolos hibah serupa untuk membagikan seluruh dokumen proposal mereka, agar Anda meniru format dan strategi mereka secara rinci.",
+            skor: 2
+          },
+          {
+            text: "Segera menghubungi rekan alumni Anda yang bekerja di kementerian terkait, meminta saran dan masukan strategis agar proposal Anda sesuai dengan preferensi penilaian pusat.",
+            skor: 5
+          },
+          {
+            text: "Mengirimkan proposal apa adanya sebelum tenggat waktu, sambil berharap isi proposal Anda sudah cukup meyakinkan tim penilai pusat.",
+            skor: 1
+          },
+          {
+            text: "Mengutus staf Anda untuk berkunjung langsung ke kementerian pusat besok, menyerahkan proposal sekaligus melakukan pendekatan informal kepada tim penilai.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "37. Anda adalah Kepala Dinas Pariwisata Kabupaten X. Kabupaten Anda memiliki potensi wisata alam yang tinggi, namun kunjungan wisatawan menurun drastis dalam dua tahun terakhir. Anda memiliki anggaran promosi yang terbatas, dan jika tidak segera ditangani, PAD (Pendapatan Asli Daerah) dari sektor pariwisata akan gagal memenuhi target. Selama ini promosi hanya dilakukan melalui media sosial resmi dinas. Anda menyadari bahwa banyak travel agent, influencer wisata lokal, dan komunitas wisata belum dilibatkan secara optimal. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan staf promosi untuk membuat konten promosi wisata setiap hari di Instagram dan TikTok Dinas Pariwisata, agar eksposur pariwisata meningkat.",
+            skor: 3
+          },
+          {
+            text: "Mengundang travel agent, influencer, dan komunitas wisata lokal ke kantor dinas minggu depan, untuk membahas peluang kolaborasi promosi dan event bersama.",
+            skor: 5
+          },
+          {
+            text: "Mengadakan event wisata lokal dengan dana pribadi Anda sebagai kepala dinas, agar menjadi contoh semangat pengembangan pariwisata bagi staf dan masyarakat.",
+            skor: 1
+          },
+          {
+            text: "Menugaskan seluruh staf Dinas Pariwisata untuk mengunjungi minimal satu destinasi wisata setiap minggu, lalu membuat laporan promosi dan evaluasi fasilitas.",
+            skor: 2
+          },
+          {
+            text: "Mencari sponsor dari perusahaan swasta nasional, untuk mendanai promosi wisata kabupaten Anda ke tingkat nasional dan internasional.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "38. Anda adalah Kepala Biro Kerja Sama Luar Negeri pada Sekretariat Daerah Provinsi X. Saat ini, terdapat peluang hibah pembangunan infrastruktur air bersih senilai USD 10 juta dari salah satu lembaga donor internasional. Namun, provinsi Anda belum pernah menjalin kerja sama langsung dengan lembaga tersebut, sementara provinsi lain sudah memiliki MoU yang aktif. Proposal hibah harus diajukan dalam waktu 2 minggu. Anda memiliki tim teknis yang mampu menyusun proposal, namun tidak memiliki jejaring kuat di lembaga donor untuk memastikan proposal Anda diperhatikan dengan baik. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Menginstruksikan tim teknis segera menyusun proposal terbaik dengan standar internasional, tanpa perlu membuang waktu untuk membangun jejaring karena kualitas proposal sudah cukup meyakinkan.",
+            skor: 2
+          },
+          {
+            text: "Menugaskan pejabat eselon III Anda untuk menghadiri seminar virtual yang diadakan oleh lembaga donor tersebut minggu ini, sekaligus melakukan pendekatan informal kepada panitia dan pembicara.",
+            skor: 4
+          },
+          {
+            text: "Menghubungi Kementerian Luar Negeri dan Bappenas untuk meminta dukungan diplomasi, agar proposal provinsi Anda memiliki kekuatan rekomendasi resmi pemerintah pusat.",
+            skor: 5
+          },
+          {
+            text: "Mengundang perwakilan lembaga donor internasional tersebut untuk mengunjungi langsung lokasi calon proyek, agar mereka mengetahui kebutuhan nyata masyarakat dan meningkatkan perhatian mereka.",
+            skor: 3
+          },
+          {
+            text: "Meminta provinsi lain yang sudah memiliki MoU dengan lembaga donor tersebut untuk meminjamkan draft proposal mereka, agar dapat ditiru format dan strateginya sebelum diajukan.",
+            skor: 1
+          }
+        ]
+      },
+      {
+        soal: "39. Anda adalah Kepala Dinas Pendidikan dan Kebudayaan Provinsi X. Saat ini, terdapat program kerja sama pendidikan dan teknologi dengan salah satu universitas ternama di Jepang, yang menawarkan hibah pengembangan laboratorium digital dan pertukaran guru selama 3 tahun. Namun, syarat utama hibah ini adalah adanya MoU aktif antara provinsi Anda dan pemerintah prefektur Jepang terkait kolaborasi pendidikan teknologi. MoU provinsi Anda dengan prefektur tersebut telah habis masa berlakunya 2 bulan lalu dan belum diperpanjang karena kendala administratif. Tenggat pendaftaran program hibah hanya tersisa 10 hari ke depan. Anda memiliki tim biro kerja sama internasional dan hubungan baik dengan Kemendikbud.",
+        opsi: [{
+            text: "Mengirimkan surat resmi permohonan dispensasi kepada universitas Jepang penyelenggara hibah, sambil memproses perpanjangan MoU dalam waktu satu bulan ke depan.",
+            skor: 3
+          },
+          {
+            text: "Meminta bantuan Kemendikbud untuk menandatangani MoU tersebut atas nama provinsi, agar dapat menghemat waktu dan memastikan kelengkapan administrasi hibah.",
+            skor: 2
+          },
+          {
+            text: "Mengirim delegasi kecil ke prefektur Jepang minggu ini, untuk melakukan audiensi langsung dan menandatangani MoU di sana sebelum batas waktu hibah berakhir.",
+            skor: 4
+          },
+          {
+            text: "Menunda pengajuan program hibah tahun ini dan memprioritaskan perpanjangan MoU untuk tahun berikutnya, agar prosesnya lebih matang dan tanpa risiko administratif.",
+            skor: 1
+          },
+          {
+            text: "Menginstruksikan tim Anda segera menyusun draft perpanjangan MoU, lalu mengirimkannya ke prefektur Jepang melalui email untuk ditandatangani sebelum batas waktu hibah berakhir.",
+            skor: 5
+          }
+        ]
+      },
+      {
+        soal: "40. Anda adalah Kepala Bappeda Kabupaten X, salah satu daerah tertinggal yang memiliki angka kemiskinan tinggi. Saat ini, ada peluang untuk mendapatkan dana CSR dari beberapa BUMN dan perusahaan swasta nasional, namun hingga kini belum ada program CSR besar yang masuk ke kabupaten Anda karena kurangnya data dan proposal terstruktur. Anggaran penyusunan proposal CSR di kabupaten Anda juga terbatas. Jika tidak segera diupayakan, maka target penurunan kemiskinan daerah Anda tahun ini dipastikan gagal tercapai. Apa yang akan anda lakukan ?",
+        opsi: [{
+            text: "Meminta seluruh camat mengirimkan daftar kebutuhan pembangunan di wilayahnya dalam waktu 2 hari, lalu mengompilasi daftar tersebut menjadi proposal CSR untuk BUMN dan swasta.",
+            skor: 5
+          },
+          {
+            text: "Menugaskan staf Anda untuk mencari contoh proposal CSR daerah lain di internet, kemudian menyalinnya dan menyesuaikan nama kabupaten sebelum dikirimkan ke BUMN dan swasta.",
+            skor: 2
+          },
+          {
+            text: "Segera mengirimkan surat permohonan dana CSR ke semua perusahaan BUMN dan swasta nasional, meskipun belum ada data detail kebutuhan pembangunan daerah Anda.",
+            skor: 1
+          },
+          {
+            text: "Mengundang semua BUMN dan perusahaan swasta nasional ke kabupaten Anda untuk audiensi langsung minggu depan, meskipun Anda belum memiliki proposal yang siap.",
+            skor: 4
+          },
+          {
+            text: "Membuat proposal CSR seadanya hanya untuk satu program unggulan, meskipun program tersebut belum melalui musrenbang dan tidak melibatkan aspirasi masyarakat setempat.",
+            skor: 3
+          }
+        ]
+      },
+      {
+        soal: "41. Anda adalah Kepala Dinas Kependudukan dan Pencatatan Sipil (Disdukcapil) Kabupaten X. Saat ini, server pusat Dukcapil nasional sedang mengalami gangguan teknis selama beberapa hari, sehingga pelayanan KTP elektronik di seluruh Indonesia terganggu. Masyarakat di daerah Anda banyak yang marah karena tidak bisa mencetak KTP untuk keperluan pendaftaran sekolah, CPNS, dan pelayanan bank. nda sudah mengumumkan adanya gangguan nasional melalui media sosial dinas, tetapi masyarakat tetap memaksa pegawai Anda menerbitkan KTP hari ini. Kondisi kantor menjadi ricuh. Anda mendengar ada oknum calo di luar kantor yang menjanjikan pembuatan KTP dengan cepat melalui jalur khusus, dan masyarakat mulai percaya meskipun harus membayar mahal.Apa yang akan anda lakukan?",
+        opsi: [{
+            text: "Menginstruksikan seluruh staf pelayanan untuk menenangkan masyarakat dan menjelaskan kembali informasi gangguan server, meskipun kondisi lapangan sangat tidak kondusif.",
+            skor: 3
+          },
+          {
+            text: "Menghubungi Dukcapil Pusat untuk meminta prioritas perbaikan server khusus untuk kabupaten Anda, agar pelayanan KTP bisa kembali normal lebih cepat dari daerah lain.",
+            skor: 1
+          },
+          {
+            text: "Membuat surat keterangan pengganti KTP elektronik sementara untuk keperluan mendesak, sambil menyiapkan laporan resmi kepada Bupati dan Kemendagri terkait potensi keresahan masyarakat.",
+            skor: 5
+          },
+          {
+            text: "Menutup sementara loket pelayanan KTP elektronik dan mengalihkan semua pegawai untuk membantu antrean pembuatan kartu keluarga dan akta lahir, agar pelayanan lain tetap berjalan normal.",
+            skor: 2
+          },
+          {
+            text: "Menerbitkan pengumuman resmi yang melarang masyarakat menggunakan jasa calo dan menugaskan Satpol PP untuk menangkap calo yang ada di sekitar kantor Disdukcapil.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "42.Anda adalah Kepala Dinas Kesehatan Kabupaten X. Saat ini terjadi wabah Demam Berdarah Dengue (DBD) mendadak di tiga kecamatan, dengan jumlah kasus meningkat dua kali lipat dibanding tahun lalu. Rumah sakit rujukan penuh, puskesmas kewalahan, dan masyarakat panik. Namun anggaran operasional DBD daerah Anda belum cair karena proses administrasi keuangan masih di BPKAD. Jika menunggu, penanganan wabah akan terlambat dan dapat menimbulkan kematian lebih banyak. Di sisi lain, menggunakan dana di luar prosedur berisiko pelanggaran hukum dan audit BPK. Apa yang akan anda lakukan?",
+        opsi: [{
+            text: "Membuat pengumuman resmi kepada masyarakat tentang keterbatasan dana pemerintah, dan mengimbau masyarakat melakukan pemberantasan sarang nyamuk secara mandiri.",
+            skor: 1
+          },
+          {
+            text: "Menginstruksikan seluruh puskesmas untuk menggunakan dana kapitasi BPJS sementara, meskipun tidak sesuai peruntukan khusus DBD, agar penanganan tidak terhenti.",
+            skor: 3
+          },
+          {
+            text: "Menggunakan dana kegiatan promosi kesehatan yang masih tersedia, meskipun peruntukannya bukan untuk penanganan langsung wabah DBD.",
+            skor: 4
+          },
+          {
+            text: "Mengajukan surat permohonan percepatan pencairan dana ke BPKAD disertai status Kejadian Luar Biasa (KLB), sambil menggunakan dana pribadi staf dan donasi sementara untuk operasional lapangan.",
+            skor: 5
+          },
+          {
+            text: "Meminta seluruh kepala puskesmas meminjam dana ke koperasi pegawai masing-masing, kemudian menggantinya setelah dana APBD cair.",
+            skor: 2
+          }
+        ]
+      },
+      {
+        soal: "43.Anda adalah Kepala Dinas Sosial Kota X. Saat ini, program bantuan sosial tunai untuk 10.000 keluarga miskin terhambat karena terdapat 1.500 data penerima ganda dan invalid akibat perbedaan NIK, nama, dan alamat di sistem DTKS (Data Terpadu Kesejahteraan Sosial).Jika Anda menunda penyaluran hingga semua data valid, maka masyarakat akan marah dan menuduh pemerintah menahan bantuan di tengah situasi ekonomi sulit. Jika dipaksakan dibagi sekarang, maka akan terjadi penyaluran bantuan tidak tepat sasaran dan potensi temuan audit BPK di kemudian hari. Apa yang akan anda lakukan?",
+        opsi: [{
+            text: "Mendistribusikan bantuan melalui kelurahan tanpa data DTKS, berdasarkan usulan RT/RW dan tokoh masyarakat setempat agar lebih cepat.",
+            skor: 4
+          },
+          {
+            text: "Menunda seluruh penyaluran bantuan sampai semua data valid, meskipun akan menimbulkan protes keras masyarakat dan tekanan DPRD setempat.",
+            skor: 2
+          },
+          {
+            text: "Menyalurkan bantuan kepada seluruh data penerima termasuk yang invalid, sambil menyiapkan penjelasan apabila ada temuan audit di kemudian hari.",
+            skor: 1
+          },
+          {
+            text: "Menghapus 1.500 data invalid dari daftar penerima, dan menyalurkan bantuan hanya kepada yang tercatat valid untuk menghindari temuan BPK.",
+            skor: 3
+          },
+          {
+            text: "Segera menyalurkan bantuan kepada 8.500 data penerima yang valid, sambil meminta tim operator DTKS memperbaiki 1.500 data invalid secara paralel.",
+            skor: 5
+          }
+        ]
+      },
+      {
+        soal: "44. Anda adalah Kepala Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu (DPMPTSP) Provinsi X. Saat ini, terdapat investor asing dari Jepang yang menunda realisasi investasi pabrik otomotif senilai Rp5 triliun karena lamanya proses perizinan AMDAL lintas kabupaten/kota di provinsi Anda.Di sisi lain, terdapat tekanan dari DPRD dan organisasi lingkungan hidup yang mengancam akan melakukan gugatan jika izin AMDAL dipercepat tanpa kajian mendalam. Investor memberi batas waktu 3 minggu untuk kejelasan izin, jika tidak, mereka akan memindahkan investasinya ke provinsi lain.Jika izin dipercepat tanpa kajian mendalam, Anda akan berhadapan dengan masalah hukum dan kerusakan lingkungan. Jika izin ditunda dengan kajian mendalam, maka provinsi kehilangan investasi dan potensi ribuan lapangan kerja.Apa yang akan anda lakukan?",
+        opsi: [{
+            text: "Meminta investor membuat komitmen tertulis dana CSR lingkungan dan penanaman pohon, untuk menenangkan DPRD dan LSM sebelum izin AMDAL terbit.",
+            skor: 3
+          },
+          {
+            text: "Mengusulkan revisi Perda Lingkungan Hidup agar prosedur AMDAL dipersingkat menjadi 2 minggu, meskipun proses revisi Perda membutuhkan waktu lama di DPRD.",
+            skor: 2
+          },
+          {
+            text: "Segera memfasilitasi pertemuan antara investor dengan semua pihak terkait (DPRD, DLH, LSM lingkungan, dan Bupati/Walikota) untuk mencari solusi percepatan tanpa menyalahi prosedur AMDAL.",
+            skor: 5
+          },
+          {
+            text: "Menginstruksikan tim teknis AMDAL untuk mempercepat penyusunan kajian dan mengurangi standar analisis, agar izin segera terbit sebelum batas waktu investor berakhir.",
+            skor: 1
+          },
+          {
+            text: "Mengirimkan surat resmi kepada investor Jepang untuk meminta perpanjangan waktu minimal 2 bulan, dengan janji izin akan selesai secara prosedural.",
+            skor: 4
+          }
+        ]
+      },
+      {
+        soal: "45.Anda adalah Direktur RSUD Provinsi X. Saat ini rumah sakit Anda mendapat sorotan media karena adanya pasien BPJS Kesehatan yang ditolak rawat inap dengan alasan penuh, padahal di lapangan masih terdapat kamar VIP kosong. Keluarga pasien merekam dan mengunggah ke media sosial sehingga viral, menimbulkan kemarahan publik, dan investigasi dari Ombudsman RI.Di sisi lain, jika pasien BPJS dipindahkan ke ruang VIP tanpa bayar, maka rumah sakit akan rugi besar dan menimbulkan protes pasien umum yang membayar penuh. Jika tetap menolak pasien BPJS, maka reputasi RSUD akan hancur dan berisiko dicabut akreditasinya.Apa yang akan anda lakukan?",
+        opsi: [{
+            text: "Segera memindahkan pasien BPJS ke ruang VIP tanpa tambahan biaya, sambil menyiapkan laporan justifikasi kerugian ke Dinas Kesehatan Provinsi.",
+            skor: 4
+          },
+          {
+            text: "Menghubungi BPJS Kesehatan untuk meminta penambahan plafon kelas perawatan pasien BPJS, agar biaya rawat inap di ruang VIP tetap ter-cover sebagian.",
+            skor: 5
+          },
+          {
+            text: "Mengumumkan kepada publik melalui konferensi pers bahwa ruangan VIP tidak boleh digunakan pasien BPJS, sesuai regulasi meskipun akan menimbulkan kecaman.",
+            skor: 1
+          },
+          {
+            text: "Menerima pasien BPJS di ruang VIP dengan biaya tambahan sesuai tarif umum, sambil meminta keluarga pasien menandatangani surat pernyataan bersedia membayar selisih.",
+            skor: 3
+          },
+          {
+            text: "Menempatkan pasien BPJS tersebut di ruang IGD sambil menunggu kamar kelas 3 tersedia, meskipun ruang IGD akan menjadi penuh dan menimbulkan keluhan pasien lain.",
+            skor: 2
+          }
+        ]
+      },
+      {
+        soal: "45. [PUSING YA]",
+        opsi: [{
+            text: "YA",
+            skor: 0
+          },
+          {
+            text: "Emang",
+            skor: 0
+          },
+          {
+            text: "Pasti",
+            skor: 0
+          },
+          {
+            text: "HUUH",
+            skor: 0
+          },
+          {
+            text: "wkwkwkwk",
+            skor: 0
+          }
+        ]
+      }
+    ];
+    let currentSoal = 0;
+    let jawabanUser = Array(soalTKP.length).fill(null);
+    let timerSeconds = 2700; // 1.5 jam untuk 45 soal
+    function renderSoal() {
+      const quizDiv = document.getElementById('quiz');
+      quizDiv.innerHTML = '';
+      soalTKP.forEach((s, idx) => {
+        const soalDiv = document.createElement('div');
+        soalDiv.className = 'soal';
+        if (idx === currentSoal) soalDiv.classList.add('active');
+        const soalTeks = document.createElement('p');
+        soalTeks.innerText = s.soal;
+        soalDiv.appendChild(soalTeks);
+        const opsiDiv = document.createElement('div');
+        opsiDiv.className = 'opsi';
+        s.opsi.forEach((o, oIdx) => {
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = 'soal' + idx;
+          input.value = o.skor;
+          input.checked = jawabanUser[idx] == o.skor;
+          input.onchange = () => jawabanUser[idx] = parseInt(o.skor);
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(o.text));
+          opsiDiv.appendChild(label);
+        });
+        soalDiv.appendChild(opsiDiv);
+        quizDiv.appendChild(soalDiv);
+      });
+    }
+
+    function nextSoal() {
+      if (currentSoal < soalTKP.length - 1) {
+        currentSoal++;
+        renderSoal();
+      }
+    }
+
+    function prevSoal() {
+      if (currentSoal > 0) {
+        currentSoal--;
+        renderSoal();
+      }
+    }
+
+    function finishQuiz() {
+      clearInterval(timerInterval);
+      let totalSkor = jawabanUser.reduce((a, b) => a + (b || 0), 0);
+      document.getElementById('quiz').style.display = 'none';
+      document.querySelector('div > button').style.display = 'none';
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('score').innerText = totalSkor;
+      // Review
+      const reviewDiv = document.getElementById('review');
+      soalTKP.forEach((s, idx) => {
+        const r = document.createElement('div');
+        r.innerHTML = `<strong>${s.soal}</strong><br>Jawaban Anda: ${jawabanUser[idx] ? s.opsi.find(o => o.skor === jawabanUser[idx]).text : 'Belum Dijawab'}<br><br>`;
+        reviewDiv.appendChild(r);
+      });
+    }
+
+    function startTimer() {
+      const timerEl = document.getElementById('timer');
+      timerInterval = setInterval(() => {
+        let h = Math.floor(timerSeconds / 3600);
+        let m = Math.floor((timerSeconds % 3600) / 60);
+        let s = timerSeconds % 60;
+        timerEl.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          finishQuiz();
+        }
+        timerSeconds--;
+      }, 1000);
+    }
+    let timerInterval;
+    renderSoal();
+    startTimer();
+  </script>
+</body>
+
+</html>
